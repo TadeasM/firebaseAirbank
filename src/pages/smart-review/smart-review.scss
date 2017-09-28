@@ -5,6 +5,13 @@ page-smart-review {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+    margin-bottom: 5px;
+    .col-6 {
+      width: 50%;
+      &.right {
+        float: right;
+      }
+    }
     &_title {
 
     }

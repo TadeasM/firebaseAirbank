@@ -25203,6 +25203,15 @@ page-smart-review .main-card {
   padding: 10px;
   border: 1px solid #eee;
   border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+page-smart-review .main-card .col-6 {
+  width: 50%;
+}
+
+page-smart-review .main-card .col-6.right {
+  float: right;
 }
 
 page-smart-review .main-card_content {

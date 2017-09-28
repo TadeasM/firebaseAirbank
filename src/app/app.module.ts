@@ -9,21 +9,35 @@ import { MyApp } from './app.component';
 import {AngularFireModule} from "angularfire2";
 import {FIREBASE_CREDENTIALS} from './firebase.credentials'
 import {SmartReviewPage} from "../pages/smart-review/smart-review";
+import {BasicAccountsComponent} from "../components/basic-accounts/basic-accounts";
+import {SavingAccountsComponent} from "../components/saving-accounts/saving-accounts";
+import {BasicAccountPage} from "../pages/basic-account/basic-account";
+import {SavingAccountPage} from "../pages/saving-account/saving-account";
+import {AngularFireDatabaseModule} from "angularfire2/database";
 
 @NgModule({
   declarations: [
     MyApp,
-    SmartReviewPage
+    SmartReviewPage,
+    BasicAccountsComponent,
+    SavingAccountsComponent,
+    BasicAccountPage,
+    SavingAccountPage
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    AngularFireModule.initializeApp(FIREBASE_CREDENTIALS)
+    // Firebase init credentials
+    AngularFireModule.initializeApp(FIREBASE_CREDENTIALS),
+    // Firebase Database module to interact
+    AngularFireDatabaseModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    SmartReviewPage
+    SmartReviewPage,
+    BasicAccountPage,
+      SavingAccountPage
   ],
   providers: [
     StatusBar,

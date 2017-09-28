@@ -1,0 +1,25 @@
+<div class="main-card no-vertical-padding">
+  <div class="main-card_list">
+    <div class="main-card_list-item">
+      <ion-row>
+        <ion-col>
+          Sporici ucty
+        </ion-col>
+        <ion-col text-right>
+          8768,98 Kc
+        </ion-col>
+      </ion-row>
+    </div>
+    <div class="main-card_list-item" >
+      <ion-row *ngFor="let account of savingAccountRef$ | async" (click)="navigateToSavingAccount(account.$key)">
+        <ion-col>
+          {{account.name}}
+        </ion-col>
+        <ion-col text-right>
+          {{account.number}}/{{account.bankCode}}
+          {{account.amount}} {{account.currency}}
+        </ion-col>
+      </ion-row>
+    </div>
+  </div>
+</div>

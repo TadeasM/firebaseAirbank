@@ -25199,11 +25199,18 @@ ion-navbar.toolbar {
   }
 }
 
+page-smart-review ion-content {
+  background-color: #eaeaea !important;
+}
+
 page-smart-review .main-card {
+  background-color: #faf9ea;
   padding: 10px;
   border: 1px solid #eee;
   border-radius: 5px;
   margin-bottom: 5px;
+  -webkit-box-shadow: 3px 3px 15px -1px rgba(161, 161, 161, 0.8);
+  box-shadow: 3px 3px 15px -1px rgba(161, 161, 161, 0.8);
 }
 
 page-smart-review .main-card .col-6 {
@@ -25212,6 +25219,11 @@ page-smart-review .main-card .col-6 {
 
 page-smart-review .main-card .col-6.right {
   float: right;
+}
+
+page-smart-review .main-card.no-vertical-padding {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 page-smart-review .main-card_content {
@@ -25224,4 +25236,13 @@ page-smart-review .main-card_content ion-icon {
 
 page-smart-review .main-card_content span {
   font-size: 10px;
+}
+
+page-smart-review .main-card_list-item {
+  padding: 10px 0px;
+  border-bottom: 1px solid #eee;
+}
+
+page-smart-review .main-card_list-item:last-child {
+  border-bottom: none;
 }

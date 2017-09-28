@@ -1,14 +1,14 @@
 webpackJsonp([2],{
 
-/***/ 282:
+/***/ 283:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SmartReviewPageModule", function() { return SmartReviewPageModule; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BasicAccountPageModule", function() { return BasicAccountPageModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__smart_review__ = __webpack_require__(281);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__basic_account__ = __webpack_require__(284);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -18,23 +18,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-var SmartReviewPageModule = (function () {
-    function SmartReviewPageModule() {
+var BasicAccountPageModule = (function () {
+    function BasicAccountPageModule() {
     }
-    return SmartReviewPageModule;
+    return BasicAccountPageModule;
 }());
-SmartReviewPageModule = __decorate([
+BasicAccountPageModule = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["L" /* NgModule */])({
         declarations: [
-            __WEBPACK_IMPORTED_MODULE_2__smart_review__["a" /* SmartReviewPage */],
+            __WEBPACK_IMPORTED_MODULE_2__basic_account__["a" /* BasicAccountPage */],
         ],
         imports: [
-            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__smart_review__["a" /* SmartReviewPage */]),
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__basic_account__["a" /* BasicAccountPage */]),
         ],
     })
-], SmartReviewPageModule);
+], BasicAccountPageModule);
 
-//# sourceMappingURL=smart-review.module.js.map
+//# sourceMappingURL=basic-account.module.js.map
 
 /***/ })
 

@@ -4,22 +4,26 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
+
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
+import {AngularFireModule} from "angularfire2";
+import {FIREBASE_CREDENTIALS} from './firebase.credentials'
+import {SmartReviewPage} from "../pages/smart-review/smart-review";
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage
+    SmartReviewPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    AngularFireModule.initializeApp(FIREBASE_CREDENTIALS)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage
+    SmartReviewPage
   ],
   providers: [
     StatusBar,

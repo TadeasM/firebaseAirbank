@@ -1,0 +1,23 @@
+page-smart-review {
+  .main-card {
+    padding: 10px;
+    border: 1px solid #eee;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    &_title {
+
+    }
+    &_content {
+      padding: 0px;
+      ion-icon {
+        font-size: 2em;
+      }
+      span {
+        font-size: 10px;
+      }
+    }
+  }
+
+
+}

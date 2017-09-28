@@ -46049,7 +46049,7 @@ exports.subscribeToResult = subscribeToResult;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_108__platform_dom_controller__ = __webpack_require__(8);
 /* unused harmony reexport DomController */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_109__platform_platform__ = __webpack_require__(3);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_109__platform_platform__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_109__platform_platform__["a"]; });
 /* unused harmony reexport setupPlatform */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_110__tap_click_haptic__ = __webpack_require__(35);
 /* unused harmony reexport Haptic */
@@ -46062,7 +46062,7 @@ exports.subscribeToResult = subscribeToResult;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_114__navigation_nav_controller_base__ = __webpack_require__(40);
 /* unused harmony reexport NavControllerBase */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_115__navigation_nav_params__ = __webpack_require__(13);
-/* unused harmony reexport NavParams */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_115__navigation_nav_params__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_116__navigation_nav_util__ = __webpack_require__(20);
 /* unused harmony reexport DeepLinkMetadata */
 /* unused harmony reexport DeepLinkMetadataFactory */
@@ -112479,6 +112479,1671 @@ var IonicNativePlugin = (function () {
 }());
 
 //# sourceMappingURL=ionic-native-plugin.js.map
+
+/***/ }),
+/* 260 */,
+/* 261 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return FirebaseAppConfigToken; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FirebaseApp; });
+/* harmony export (immutable) */ __webpack_exports__["c"] = _firebaseAppFactory;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase_app__ = __webpack_require__(266);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_firebase_app___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_firebase_app__);
+
+
+var FirebaseAppConfigToken = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* InjectionToken */]('FirebaseAppConfigToken');
+var FirebaseApp = (function () {
+    function FirebaseApp() {
+    }
+    return FirebaseApp;
+}());
+
+function _firebaseAppFactory(config, appName) {
+    try {
+        if (appName) {
+            return __WEBPACK_IMPORTED_MODULE_1_firebase_app__["initializeApp"](config, appName);
+        }
+        else {
+            return __WEBPACK_IMPORTED_MODULE_1_firebase_app__["initializeApp"](config);
+        }
+    }
+    catch (e) {
+        if (e.code === "app/duplicate-app") {
+            return __WEBPACK_IMPORTED_MODULE_1_firebase_app__["app"](e.name);
+        }
+        return __WEBPACK_IMPORTED_MODULE_1_firebase_app__["app"](null);
+    }
+}
+//# sourceMappingURL=firebase.app.module.js.map
+
+/***/ }),
+/* 262 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.attachDummyErrorHandler = exports.Deferred = exports.PromiseImpl = undefined;
+
+var _globalScope = __webpack_require__(270);
+
+var PromiseImpl = exports.PromiseImpl = _globalScope.globalScope.Promise || __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"promise-polyfill\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+/**
+ * A deferred promise implementation.
+ */
+/**
+* Copyright 2017 Google Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var Deferred = /** @class */function () {
+    /** @constructor */
+    function Deferred() {
+        var self = this;
+        this.resolve = null;
+        this.reject = null;
+        this.promise = new PromiseImpl(function (resolve, reject) {
+            self.resolve = resolve;
+            self.reject = reject;
+        });
+    }
+    /**
+     * Our API internals are not promiseified and cannot because our callback APIs have subtle expectations around
+     * invoking promises inline, which Promises are forbidden to do. This method accepts an optional node-style callback
+     * and returns a node-style callback which will resolve or reject the Deferred's promise.
+     * @param {((?function(?(Error)): (?|undefined))| (?function(?(Error),?=): (?|undefined)))=} opt_nodeCallback
+     * @return {!function(?(Error), ?=)}
+     */
+    Deferred.prototype.wrapCallback = function (opt_nodeCallback) {
+        var self = this;
+        /**
+           * @param {?Error} error
+           * @param {?=} opt_value
+           */
+        function meta(error, opt_value) {
+            if (error) {
+                self.reject(error);
+            } else {
+                self.resolve(opt_value);
+            }
+            if (typeof opt_nodeCallback === 'function') {
+                attachDummyErrorHandler(self.promise);
+                // Some of our callbacks don't expect a value and our own tests
+                // assert that the parameter length is 1
+                if (opt_nodeCallback.length === 1) {
+                    opt_nodeCallback(error);
+                } else {
+                    opt_nodeCallback(error, opt_value);
+                }
+            }
+        }
+        return meta;
+    };
+    return Deferred;
+}();
+exports.Deferred = Deferred;
+/**
+ * Chrome (and maybe other browsers) report an Error in the console if you reject a promise
+ * and nobody handles the error. This is normally a good thing, but this will confuse devs who
+ * never intended to use promises in the first place. So in some cases (in particular, if the
+ * developer attached a callback), we should attach a dummy resolver to the promise to suppress
+ * this error.
+ *
+ * Note: We can't do this all the time, since it breaks the Promise spec (though in the obscure
+ * 3.3.3 section related to upgrading non-compliant promises).
+ * @param {!firebase.Promise} promise
+ */
+
+var attachDummyErrorHandler = exports.attachDummyErrorHandler = function attachDummyErrorHandler(promise) {
+    promise.catch(function () {});
+};
+//# sourceMappingURL=promise.js.map
+
+
+/***/ }),
+/* 263 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__public_api__ = __webpack_require__(264);
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__public_api__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__firebase_app_module__ = __webpack_require__(261);
+/* unused harmony reexport ɵa */
+
+
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 264 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angularfire2__ = __webpack_require__(265);
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__angularfire2__["a"]; });
+
+//# sourceMappingURL=public_api.js.map
+
+/***/ }),
+/* 265 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export FirebaseAppProvider */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AngularFireModule; });
+/* unused harmony export ZoneScheduler */
+/* unused harmony export FirebaseAppName */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__firebase_app_module__ = __webpack_require__(261);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_scheduler_queue__ = __webpack_require__(273);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_scheduler_queue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_scheduler_queue__);
+/* unused harmony reexport FirebaseApp */
+/* unused harmony reexport FirebaseAppConfigToken */
+
+
+
+var FirebaseAppName = new __WEBPACK_IMPORTED_MODULE_1__angular_core__["C" /* InjectionToken */]('FirebaseAppName');
+var FirebaseAppProvider = {
+    provide: __WEBPACK_IMPORTED_MODULE_0__firebase_app_module__["a" /* FirebaseApp */],
+    useFactory: __WEBPACK_IMPORTED_MODULE_0__firebase_app_module__["c" /* _firebaseAppFactory */],
+    deps: [__WEBPACK_IMPORTED_MODULE_0__firebase_app_module__["b" /* FirebaseAppConfigToken */], FirebaseAppName]
+};
+var AngularFireModule = (function () {
+    function AngularFireModule() {
+    }
+    AngularFireModule.initializeApp = function (config, appName) {
+        return {
+            ngModule: AngularFireModule,
+            providers: [
+                { provide: __WEBPACK_IMPORTED_MODULE_0__firebase_app_module__["b" /* FirebaseAppConfigToken */], useValue: config },
+                { provide: FirebaseAppName, useValue: appName }
+            ]
+        };
+    };
+    AngularFireModule.decorators = [
+        { type: __WEBPACK_IMPORTED_MODULE_1__angular_core__["L" /* NgModule */], args: [{
+                    providers: [FirebaseAppProvider],
+                },] },
+    ];
+    AngularFireModule.ctorParameters = function () { return []; };
+    return AngularFireModule;
+}());
+
+var ZoneScheduler = (function () {
+    function ZoneScheduler(zone) {
+        this.zone = zone;
+    }
+    ZoneScheduler.prototype.schedule = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        return this.zone.run(function () { return __WEBPACK_IMPORTED_MODULE_2_rxjs_scheduler_queue__["queue"].schedule.apply(__WEBPACK_IMPORTED_MODULE_2_rxjs_scheduler_queue__["queue"], args); });
+    };
+    return ZoneScheduler;
+}());
+
+
+//# sourceMappingURL=angularfire2.js.map
+
+/***/ }),
+/* 266 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+__webpack_require__(267);
+
+var _firebase_app = __webpack_require__(268);
+
+// Export a single instance of firebase app
+/**
+* Copyright 2017 Google Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+// Import the needed shims
+var firebase = (0, _firebase_app.createFirebaseNamespace)();
+// Import the createFirebaseNamespace function
+exports.default = firebase;
+module.exports = exports['default'];
+//# sourceMappingURL=app.js.map
+
+
+/***/ }),
+/* 267 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+/**
+ * This is the Array.prototype.findIndex polyfill from MDN
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
+ * https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
+ */
+if (!Array.prototype.findIndex) {
+    Object.defineProperty(Array.prototype, 'findIndex', {
+        value: function value(predicate) {
+            // 1. Let O be ? ToObject(this value).
+            if (this == null) {
+                throw new TypeError('"this" is null or not defined');
+            }
+            var o = Object(this);
+            // 2. Let len be ? ToLength(? Get(O, "length")).
+            var len = o.length >>> 0;
+            // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+            var thisArg = arguments[1];
+            // 5. Let k be 0.
+            var k = 0;
+            // 6. Repeat, while k < len
+            while (k < len) {
+                // a. Let Pk be ! ToString(k).
+                // b. Let kValue be ? Get(O, Pk).
+                // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                // d. If testResult is true, return k.
+                var kValue = o[k];
+                if (predicate.call(thisArg, kValue, k, o)) {
+                    return k;
+                }
+                // e. Increase k by 1.
+                k++;
+            }
+            // 7. Return -1.
+            return -1;
+        }
+    });
+}
+/**
+ * This is the Array.prototype.find polyfill from MDN
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+ * https://tc39.github.io/ecma262/#sec-array.prototype.find
+ */
+if (!Array.prototype.find) {
+    Object.defineProperty(Array.prototype, 'find', {
+        value: function value(predicate) {
+            // 1. Let O be ? ToObject(this value).
+            if (this == null) {
+                throw new TypeError('"this" is null or not defined');
+            }
+            var o = Object(this);
+            // 2. Let len be ? ToLength(? Get(O, "length")).
+            var len = o.length >>> 0;
+            // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
+            }
+            // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+            var thisArg = arguments[1];
+            // 5. Let k be 0.
+            var k = 0;
+            // 6. Repeat, while k < len
+            while (k < len) {
+                // a. Let Pk be ! ToString(k).
+                // b. Let kValue be ? Get(O, Pk).
+                // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                // d. If testResult is true, return kValue.
+                var kValue = o[k];
+                if (predicate.call(thisArg, kValue, k, o)) {
+                    return kValue;
+                }
+                // e. Increase k by 1.
+                k++;
+            }
+            // 7. Return undefined.
+            return undefined;
+        }
+    });
+}
+//# sourceMappingURL=shims.js.map
+
+
+/***/ }),
+/* 268 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createFirebaseNamespace = createFirebaseNamespace;
+
+var _subscribe = __webpack_require__(269);
+
+var _errors = __webpack_require__(271);
+
+var _promise = __webpack_require__(262);
+
+var _deep_copy = __webpack_require__(272);
+
+/**
+* Copyright 2017 Google Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var contains = function contains(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+};
+var DEFAULT_ENTRY_NAME = '[DEFAULT]';
+// An array to capture listeners before the true auth functions
+// exist
+var tokenListeners = [];
+/**
+ * Global context object for a collection of services using
+ * a shared authentication state.
+ */
+var FirebaseAppImpl = /** @class */function () {
+    function FirebaseAppImpl(options, name, firebase_) {
+        this.firebase_ = firebase_;
+        this.isDeleted_ = false;
+        this.services_ = {};
+        this.name_ = name;
+        this.options_ = (0, _deep_copy.deepCopy)(options);
+        this.INTERNAL = {
+            getUid: function getUid() {
+                return null;
+            },
+            getToken: function getToken() {
+                return _promise.PromiseImpl.resolve(null);
+            },
+            addAuthTokenListener: function addAuthTokenListener(callback) {
+                tokenListeners.push(callback);
+                // Make sure callback is called, asynchronously, in the absence of the auth module
+                setTimeout(function () {
+                    return callback(null);
+                }, 0);
+            },
+            removeAuthTokenListener: function removeAuthTokenListener(callback) {
+                tokenListeners = tokenListeners.filter(function (listener) {
+                    return listener !== callback;
+                });
+            }
+        };
+    }
+    Object.defineProperty(FirebaseAppImpl.prototype, "name", {
+        get: function get() {
+            this.checkDestroyed_();
+            return this.name_;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FirebaseAppImpl.prototype, "options", {
+        get: function get() {
+            this.checkDestroyed_();
+            return this.options_;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    FirebaseAppImpl.prototype.delete = function () {
+        var _this = this;
+        return new _promise.PromiseImpl(function (resolve) {
+            _this.checkDestroyed_();
+            resolve();
+        }).then(function () {
+            _this.firebase_.INTERNAL.removeApp(_this.name_);
+            var services = [];
+            Object.keys(_this.services_).forEach(function (serviceKey) {
+                Object.keys(_this.services_[serviceKey]).forEach(function (instanceKey) {
+                    services.push(_this.services_[serviceKey][instanceKey]);
+                });
+            });
+            return _promise.PromiseImpl.all(services.map(function (service) {
+                return service.INTERNAL.delete();
+            }));
+        }).then(function () {
+            _this.isDeleted_ = true;
+            _this.services_ = {};
+        });
+    };
+    /**
+     * Return a service instance associated with this app (creating it
+     * on demand), identified by the passed instanceIdentifier.
+     *
+     * NOTE: Currently storage is the only one that is leveraging this
+     * functionality. They invoke it by calling:
+     *
+     * ```javascript
+     * firebase.app().storage('STORAGE BUCKET ID')
+     * ```
+     *
+     * The service name is passed to this already
+     * @internal
+     */
+    FirebaseAppImpl.prototype._getService = function (name, instanceIdentifier) {
+        if (instanceIdentifier === void 0) {
+            instanceIdentifier = DEFAULT_ENTRY_NAME;
+        }
+        this.checkDestroyed_();
+        if (!this.services_[name]) {
+            this.services_[name] = {};
+        }
+        if (!this.services_[name][instanceIdentifier]) {
+            /**
+             * If a custom instance has been defined (i.e. not '[DEFAULT]')
+             * then we will pass that instance on, otherwise we pass `null`
+             */
+            var instanceSpecifier = instanceIdentifier !== DEFAULT_ENTRY_NAME ? instanceIdentifier : undefined;
+            var service = this.firebase_.INTERNAL.factories[name](this, this.extendApp.bind(this), instanceSpecifier);
+            this.services_[name][instanceIdentifier] = service;
+        }
+        return this.services_[name][instanceIdentifier];
+    };
+    /**
+     * Callback function used to extend an App instance at the time
+     * of service instance creation.
+     */
+    FirebaseAppImpl.prototype.extendApp = function (props) {
+        var _this = this;
+        // Copy the object onto the FirebaseAppImpl prototype
+        (0, _deep_copy.deepExtend)(this, props);
+        /**
+         * If the app has overwritten the addAuthTokenListener stub, forward
+         * the active token listeners on to the true fxn.
+         *
+         * TODO: This function is required due to our current module
+         * structure. Once we are able to rely strictly upon a single module
+         * implementation, this code should be refactored and Auth should
+         * provide these stubs and the upgrade logic
+         */
+        if (props.INTERNAL && props.INTERNAL.addAuthTokenListener) {
+            tokenListeners.forEach(function (listener) {
+                _this.INTERNAL.addAuthTokenListener(listener);
+            });
+            tokenListeners = [];
+        }
+    };
+    /**
+     * This function will throw an Error if the App has already been deleted -
+     * use before performing API actions on the App.
+     */
+    FirebaseAppImpl.prototype.checkDestroyed_ = function () {
+        if (this.isDeleted_) {
+            error('app-deleted', { name: this.name_ });
+        }
+    };
+    return FirebaseAppImpl;
+}();
+// Prevent dead-code elimination of these methods w/o invalid property
+// copying.
+FirebaseAppImpl.prototype.name && FirebaseAppImpl.prototype.options || FirebaseAppImpl.prototype.delete || console.log('dc');
+/**
+ * Return a firebase namespace object.
+ *
+ * In production, this will be called exactly once and the result
+ * assigned to the 'firebase' global.  It may be called multiple times
+ * in unit tests.
+ */
+function createFirebaseNamespace() {
+    var apps_ = {};
+    var factories = {};
+    var appHooks = {};
+    // A namespace is a plain JavaScript Object.
+    var namespace = {
+        // Hack to prevent Babel from modifying the object returned
+        // as the firebase namespace.
+        __esModule: true,
+        initializeApp: initializeApp,
+        app: app,
+        apps: null,
+        Promise: _promise.PromiseImpl,
+        SDK_VERSION: '4.4.0',
+        INTERNAL: {
+            registerService: registerService,
+            createFirebaseNamespace: createFirebaseNamespace,
+            extendNamespace: extendNamespace,
+            createSubscribe: _subscribe.createSubscribe,
+            ErrorFactory: _errors.ErrorFactory,
+            removeApp: removeApp,
+            factories: factories,
+            useAsService: useAsService,
+            Promise: _promise.PromiseImpl,
+            deepExtend: _deep_copy.deepExtend
+        }
+    };
+    // Inject a circular default export to allow Babel users who were previously
+    // using:
+    //
+    //   import firebase from 'firebase';
+    //   which becomes: var firebase = require('firebase').default;
+    //
+    // instead of
+    //
+    //   import * as firebase from 'firebase';
+    //   which becomes: var firebase = require('firebase');
+    (0, _deep_copy.patchProperty)(namespace, 'default', namespace);
+    // firebase.apps is a read-only getter.
+    Object.defineProperty(namespace, 'apps', {
+        get: getApps
+    });
+    /**
+     * Called by App.delete() - but before any services associated with the App
+     * are deleted.
+     */
+    function removeApp(name) {
+        var app = apps_[name];
+        callAppHooks(app, 'delete');
+        delete apps_[name];
+    }
+    /**
+     * Get the App object for a given name (or DEFAULT).
+     */
+    function app(name) {
+        name = name || DEFAULT_ENTRY_NAME;
+        if (!contains(apps_, name)) {
+            error('no-app', { name: name });
+        }
+        return apps_[name];
+    }
+    (0, _deep_copy.patchProperty)(app, 'App', FirebaseAppImpl);
+    /**
+     * Create a new App instance (name must be unique).
+     */
+    function initializeApp(options, name) {
+        if (name === undefined) {
+            name = DEFAULT_ENTRY_NAME;
+        } else {
+            if (typeof name !== 'string' || name === '') {
+                error('bad-app-name', { name: name + '' });
+            }
+        }
+        if (contains(apps_, name)) {
+            error('duplicate-app', { name: name });
+        }
+        var app = new FirebaseAppImpl(options, name, namespace);
+        apps_[name] = app;
+        callAppHooks(app, 'create');
+        return app;
+    }
+    /*
+     * Return an array of all the non-deleted FirebaseApps.
+     */
+    function getApps() {
+        // Make a copy so caller cannot mutate the apps list.
+        return Object.keys(apps_).map(function (name) {
+            return apps_[name];
+        });
+    }
+    /*
+     * Register a Firebase Service.
+     *
+     * firebase.INTERNAL.registerService()
+     *
+     * TODO: Implement serviceProperties.
+     */
+    function registerService(name, createService, serviceProperties, appHook, allowMultipleInstances) {
+        // Cannot re-register a service that already exists
+        if (factories[name]) {
+            error('duplicate-service', { name: name });
+        }
+        // Capture the service factory for later service instantiation
+        factories[name] = createService;
+        // Capture the appHook, if passed
+        if (appHook) {
+            appHooks[name] = appHook;
+            // Run the **new** app hook on all existing apps
+            getApps().forEach(function (app) {
+                appHook('create', app);
+            });
+        }
+        // The Service namespace is an accessor function ...
+        var serviceNamespace = function serviceNamespace(appArg) {
+            if (appArg === void 0) {
+                appArg = app();
+            }
+            if (typeof appArg[name] !== 'function') {
+                // Invalid argument.
+                // This happens in the following case: firebase.storage('gs:/')
+                error('invalid-app-argument', { name: name });
+            }
+            // Forward service instance lookup to the FirebaseApp.
+            return appArg[name]();
+        };
+        // ... and a container for service-level properties.
+        if (serviceProperties !== undefined) {
+            (0, _deep_copy.deepExtend)(serviceNamespace, serviceProperties);
+        }
+        // Monkey-patch the serviceNamespace onto the firebase namespace
+        namespace[name] = serviceNamespace;
+        // Patch the FirebaseAppImpl prototype
+        FirebaseAppImpl.prototype[name] = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var serviceFxn = this._getService.bind(this, name);
+            return serviceFxn.apply(this, allowMultipleInstances ? args : []);
+        };
+        return serviceNamespace;
+    }
+    /**
+     * Patch the top-level firebase namespace with additional properties.
+     *
+     * firebase.INTERNAL.extendNamespace()
+     */
+    function extendNamespace(props) {
+        (0, _deep_copy.deepExtend)(namespace, props);
+    }
+    function callAppHooks(app, eventName) {
+        Object.keys(factories).forEach(function (serviceName) {
+            // Ignore virtual services
+            var factoryName = useAsService(app, serviceName);
+            if (factoryName === null) {
+                return;
+            }
+            if (appHooks[factoryName]) {
+                appHooks[factoryName](eventName, app);
+            }
+        });
+    }
+    // Map the requested service to a registered service name
+    // (used to map auth to serverAuth service when needed).
+    function useAsService(app, name) {
+        if (name === 'serverAuth') {
+            return null;
+        }
+        var useService = name;
+        var options = app.options;
+        return useService;
+    }
+    return namespace;
+}
+function error(code, args) {
+    throw appErrors.create(code, args);
+}
+// TypeScript does not support non-string indexes!
+// let errors: {[code: AppError: string} = {
+var errors = {
+    'no-app': "No Firebase App '{$name}' has been created - " + 'call Firebase App.initializeApp()',
+    'bad-app-name': "Illegal App name: '{$name}",
+    'duplicate-app': "Firebase App named '{$name}' already exists",
+    'app-deleted': "Firebase App named '{$name}' already deleted",
+    'duplicate-service': "Firebase service named '{$name}' already registered",
+    'sa-not-supported': 'Initializing the Firebase SDK with a service ' + 'account is only allowed in a Node.js environment. On client ' + 'devices, you should instead initialize the SDK with an api key and ' + 'auth domain',
+    'invalid-app-argument': 'firebase.{$name}() takes either no argument or a ' + 'Firebase App instance.'
+};
+var appErrors = new _errors.ErrorFactory('app', 'Firebase', errors);
+//# sourceMappingURL=firebase_app.js.map
+
+
+/***/ }),
+/* 269 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.createSubscribe = createSubscribe;
+exports.async = async;
+
+var _promise = __webpack_require__(262);
+
+/**
+ * Helper to make a Subscribe function (just like Promise helps make a
+ * Thenable).
+ *
+ * @param executor Function which can make calls to a single Observer
+ *     as a proxy.
+ * @param onNoObservers Callback when count of Observers goes to zero.
+ */
+function createSubscribe(executor, onNoObservers) {
+    var proxy = new ObserverProxy(executor, onNoObservers);
+    return proxy.subscribe.bind(proxy);
+}
+/**
+ * Implement fan-out for any number of Observers attached via a subscribe
+ * function.
+ */
+var ObserverProxy = /** @class */function () {
+    /**
+     * @param executor Function which can make calls to a single Observer
+     *     as a proxy.
+     * @param onNoObservers Callback when count of Observers goes to zero.
+     */
+    function ObserverProxy(executor, onNoObservers) {
+        var _this = this;
+        this.observers = [];
+        this.unsubscribes = [];
+        this.observerCount = 0;
+        // Micro-task scheduling by calling task.then().
+        this.task = _promise.PromiseImpl.resolve();
+        this.finalized = false;
+        this.onNoObservers = onNoObservers;
+        // Call the executor asynchronously so subscribers that are called
+        // synchronously after the creation of the subscribe function
+        // can still receive the very first value generated in the executor.
+        this.task.then(function () {
+            executor(_this);
+        }).catch(function (e) {
+            _this.error(e);
+        });
+    }
+    ObserverProxy.prototype.next = function (value) {
+        this.forEachObserver(function (observer) {
+            observer.next(value);
+        });
+    };
+    ObserverProxy.prototype.error = function (error) {
+        this.forEachObserver(function (observer) {
+            observer.error(error);
+        });
+        this.close(error);
+    };
+    ObserverProxy.prototype.complete = function () {
+        this.forEachObserver(function (observer) {
+            observer.complete();
+        });
+        this.close();
+    };
+    /**
+     * Subscribe function that can be used to add an Observer to the fan-out list.
+     *
+     * - We require that no event is sent to a subscriber sychronously to their
+     *   call to subscribe().
+     */
+    ObserverProxy.prototype.subscribe = function (nextOrObserver, error, complete) {
+        var _this = this;
+        var observer;
+        if (nextOrObserver === undefined && error === undefined && complete === undefined) {
+            throw new Error('Missing Observer.');
+        }
+        // Assemble an Observer object when passed as callback functions.
+        if (implementsAnyMethods(nextOrObserver, ['next', 'error', 'complete'])) {
+            observer = nextOrObserver;
+        } else {
+            observer = {
+                next: nextOrObserver,
+                error: error,
+                complete: complete
+            };
+        }
+        if (observer.next === undefined) {
+            observer.next = noop;
+        }
+        if (observer.error === undefined) {
+            observer.error = noop;
+        }
+        if (observer.complete === undefined) {
+            observer.complete = noop;
+        }
+        var unsub = this.unsubscribeOne.bind(this, this.observers.length);
+        // Attempt to subscribe to a terminated Observable - we
+        // just respond to the Observer with the final error or complete
+        // event.
+        if (this.finalized) {
+            this.task.then(function () {
+                try {
+                    if (_this.finalError) {
+                        observer.error(_this.finalError);
+                    } else {
+                        observer.complete();
+                    }
+                } catch (e) {
+                    // nothing
+                }
+                return;
+            });
+        }
+        this.observers.push(observer);
+        return unsub;
+    };
+    // Unsubscribe is synchronous - we guarantee that no events are sent to
+    // any unsubscribed Observer.
+    ObserverProxy.prototype.unsubscribeOne = function (i) {
+        if (this.observers === undefined || this.observers[i] === undefined) {
+            return;
+        }
+        delete this.observers[i];
+        this.observerCount -= 1;
+        if (this.observerCount === 0 && this.onNoObservers !== undefined) {
+            this.onNoObservers(this);
+        }
+    };
+    ObserverProxy.prototype.forEachObserver = function (fn) {
+        if (this.finalized) {
+            // Already closed by previous event....just eat the additional values.
+            return;
+        }
+        // Since sendOne calls asynchronously - there is no chance that
+        // this.observers will become undefined.
+        for (var i = 0; i < this.observers.length; i++) {
+            this.sendOne(i, fn);
+        }
+    };
+    // Call the Observer via one of it's callback function. We are careful to
+    // confirm that the observe has not been unsubscribed since this asynchronous
+    // function had been queued.
+    ObserverProxy.prototype.sendOne = function (i, fn) {
+        var _this = this;
+        // Execute the callback asynchronously
+        this.task.then(function () {
+            if (_this.observers !== undefined && _this.observers[i] !== undefined) {
+                try {
+                    fn(_this.observers[i]);
+                } catch (e) {
+                    // Ignore exceptions raised in Observers or missing methods of an
+                    // Observer.
+                    // Log error to console. b/31404806
+                    if (typeof console !== 'undefined' && console.error) {
+                        console.error(e);
+                    }
+                }
+            }
+        });
+    };
+    ObserverProxy.prototype.close = function (err) {
+        var _this = this;
+        if (this.finalized) {
+            return;
+        }
+        this.finalized = true;
+        if (err !== undefined) {
+            this.finalError = err;
+        }
+        // Proxy is no longer needed - garbage collect references
+        this.task.then(function () {
+            _this.observers = undefined;
+            _this.onNoObservers = undefined;
+        });
+    };
+    return ObserverProxy;
+}();
+/** Turn synchronous function into one called asynchronously. */
+function async(fn, onError) {
+    return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        _promise.PromiseImpl.resolve(true).then(function () {
+            fn.apply(void 0, args);
+        }).catch(function (error) {
+            if (onError) {
+                onError(error);
+            }
+        });
+    };
+}
+/**
+ * Return true if the object passed in implements any of the named methods.
+ */
+function implementsAnyMethods(obj, methods) {
+    if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' || obj === null) {
+        return false;
+    }
+    for (var _i = 0, methods_1 = methods; _i < methods_1.length; _i++) {
+        var method = methods_1[_i];
+        if (method in obj && typeof obj[method] === 'function') {
+            return true;
+        }
+    }
+    return false;
+}
+function noop() {
+    // do nothing
+}
+//# sourceMappingURL=subscribe.js.map
+
+
+/***/ }),
+/* 270 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+* Copyright 2017 Google Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var scope;
+if (typeof global !== 'undefined') {
+    scope = global;
+} else if (typeof self !== 'undefined') {
+    scope = self;
+} else {
+    try {
+        scope = Function('return this')();
+    } catch (e) {
+        throw new Error('polyfill failed because global object is unavailable in this environment');
+    }
+}
+var globalScope = exports.globalScope = scope;
+//# sourceMappingURL=globalScope.js.map
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(98)))
+
+/***/ }),
+/* 271 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.patchCapture = patchCapture;
+var ERROR_NAME = 'FirebaseError';
+var captureStackTrace = Error.captureStackTrace;
+// Export for faking in tests
+function patchCapture(captureFake) {
+    var result = captureStackTrace;
+    captureStackTrace = captureFake;
+    return result;
+}
+var FirebaseError = /** @class */function () {
+    function FirebaseError(code, message) {
+        this.code = code;
+        this.message = message;
+        var stack;
+        // We want the stack value, if implemented by Error
+        if (captureStackTrace) {
+            // Patches this.stack, omitted calls above ErrorFactory#create
+            captureStackTrace(this, ErrorFactory.prototype.create);
+        } else {
+            var err_1 = Error.apply(this, arguments);
+            this.name = ERROR_NAME;
+            // Make non-enumerable getter for the property.
+            Object.defineProperty(this, 'stack', {
+                get: function get() {
+                    return err_1.stack;
+                }
+            });
+        }
+    }
+    return FirebaseError;
+}();
+exports.FirebaseError = FirebaseError;
+// Back-door inheritance
+
+FirebaseError.prototype = Object.create(Error.prototype);
+FirebaseError.prototype.constructor = FirebaseError;
+FirebaseError.prototype.name = ERROR_NAME;
+var ErrorFactory = /** @class */function () {
+    function ErrorFactory(service, serviceName, errors) {
+        this.service = service;
+        this.serviceName = serviceName;
+        this.errors = errors;
+        // Matches {$name}, by default.
+        this.pattern = /\{\$([^}]+)}/g;
+        // empty
+    }
+    ErrorFactory.prototype.create = function (code, data) {
+        if (data === undefined) {
+            data = {};
+        }
+        var template = this.errors[code];
+        var fullCode = this.service + '/' + code;
+        var message;
+        if (template === undefined) {
+            message = 'Error';
+        } else {
+            message = template.replace(this.pattern, function (match, key) {
+                var value = data[key];
+                return value !== undefined ? value.toString() : '<' + key + '?>';
+            });
+        }
+        // Service: Error message (service/code).
+        message = this.serviceName + ': ' + message + ' (' + fullCode + ').';
+        var err = new FirebaseError(fullCode, message);
+        // Populate the Error object with message parts for programmatic
+        // accesses (e.g., e.file).
+        for (var prop in data) {
+            if (!data.hasOwnProperty(prop) || prop.slice(-1) === '_') {
+                continue;
+            }
+            err[prop] = data[prop];
+        }
+        return err;
+    };
+    return ErrorFactory;
+}();
+exports.ErrorFactory = ErrorFactory;
+//# sourceMappingURL=errors.js.map
+
+
+/***/ }),
+/* 272 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*! @license Firebase v4.4.0
+Build: rev-380121f
+Terms: https://firebase.google.com/terms/ */
+
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.deepCopy = deepCopy;
+exports.deepExtend = deepExtend;
+exports.patchProperty = patchProperty;
+/**
+* Copyright 2017 Google Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+ * Do a deep-copy of basic JavaScript Objects or Arrays.
+ */
+function deepCopy(value) {
+    return deepExtend(undefined, value);
+}
+/**
+ * Copy properties from source to target (recursively allows extension
+ * of Objects and Arrays).  Scalar values in the target are over-written.
+ * If target is undefined, an object of the appropriate type will be created
+ * (and returned).
+ *
+ * We recursively copy all child properties of plain Objects in the source- so
+ * that namespace- like dictionaries are merged.
+ *
+ * Note that the target can be a function, in which case the properties in
+ * the source Object are copied onto it as static properties of the Function.
+ */
+function deepExtend(target, source) {
+    if (!(source instanceof Object)) {
+        return source;
+    }
+    switch (source.constructor) {
+        case Date:
+            // Treat Dates like scalars; if the target date object had any child
+            // properties - they will be lost!
+            var dateValue = source;
+            return new Date(dateValue.getTime());
+        case Object:
+            if (target === undefined) {
+                target = {};
+            }
+            break;
+        case Array:
+            // Always copy the array source and overwrite the target.
+            target = [];
+            break;
+        default:
+            // Not a plain Object - treat it as a scalar.
+            return source;
+    }
+    for (var prop in source) {
+        if (!source.hasOwnProperty(prop)) {
+            continue;
+        }
+        target[prop] = deepExtend(target[prop], source[prop]);
+    }
+    return target;
+}
+// TODO: Really needed (for JSCompiler type checking)?
+function patchProperty(obj, prop, value) {
+    obj[prop] = value;
+}
+//# sourceMappingURL=deep_copy.js.map
+
+
+/***/ }),
+/* 273 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var QueueAction_1 = __webpack_require__(274);
+var QueueScheduler_1 = __webpack_require__(277);
+/**
+ *
+ * Queue Scheduler
+ *
+ * <span class="informal">Put every next task on a queue, instead of executing it immediately</span>
+ *
+ * `queue` scheduler, when used with delay, behaves the same as {@link async} scheduler.
+ *
+ * When used without delay, it schedules given task synchronously - executes it right when
+ * it is scheduled. However when called recursively, that is when inside the scheduled task,
+ * another task is scheduled with queue scheduler, instead of executing immediately as well,
+ * that task will be put on a queue and wait for current one to finish.
+ *
+ * This means that when you execute task with `queue` scheduler, you are sure it will end
+ * before any other task scheduled with that scheduler will start.
+ *
+ * @examples <caption>Schedule recursively first, then do something</caption>
+ *
+ * Rx.Scheduler.queue.schedule(() => {
+ *   Rx.Scheduler.queue.schedule(() => console.log('second')); // will not happen now, but will be put on a queue
+ *
+ *   console.log('first');
+ * });
+ *
+ * // Logs:
+ * // "first"
+ * // "second"
+ *
+ *
+ * @example <caption>Reschedule itself recursively</caption>
+ *
+ * Rx.Scheduler.queue.schedule(function(state) {
+ *   if (state !== 0) {
+ *     console.log('before', state);
+ *     this.schedule(state - 1); // `this` references currently executing Action,
+ *                               // which we reschedule with new state
+ *     console.log('after', state);
+ *   }
+ * }, 0, 3);
+ *
+ * // In scheduler that runs recursively, you would expect:
+ * // "before", 3
+ * // "before", 2
+ * // "before", 1
+ * // "after", 1
+ * // "after", 2
+ * // "after", 3
+ *
+ * // But with queue it logs:
+ * // "before", 3
+ * // "after", 3
+ * // "before", 2
+ * // "after", 2
+ * // "before", 1
+ * // "after", 1
+ *
+ *
+ * @static true
+ * @name queue
+ * @owner Scheduler
+ */
+exports.queue = new QueueScheduler_1.QueueScheduler(QueueAction_1.QueueAction);
+//# sourceMappingURL=queue.js.map
+
+/***/ }),
+/* 274 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var AsyncAction_1 = __webpack_require__(275);
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @ignore
+ * @extends {Ignored}
+ */
+var QueueAction = (function (_super) {
+    __extends(QueueAction, _super);
+    function QueueAction(scheduler, work) {
+        _super.call(this, scheduler, work);
+        this.scheduler = scheduler;
+        this.work = work;
+    }
+    QueueAction.prototype.schedule = function (state, delay) {
+        if (delay === void 0) { delay = 0; }
+        if (delay > 0) {
+            return _super.prototype.schedule.call(this, state, delay);
+        }
+        this.delay = delay;
+        this.state = state;
+        this.scheduler.flush(this);
+        return this;
+    };
+    QueueAction.prototype.execute = function (state, delay) {
+        return (delay > 0 || this.closed) ?
+            _super.prototype.execute.call(this, state, delay) :
+            this._execute(state, delay);
+    };
+    QueueAction.prototype.requestAsyncId = function (scheduler, id, delay) {
+        if (delay === void 0) { delay = 0; }
+        // If delay exists and is greater than 0, or if the delay is null (the
+        // action wasn't rescheduled) but was originally scheduled as an async
+        // action, then recycle as an async action.
+        if ((delay !== null && delay > 0) || (delay === null && this.delay > 0)) {
+            return _super.prototype.requestAsyncId.call(this, scheduler, id, delay);
+        }
+        // Otherwise flush the scheduler starting with this action.
+        return scheduler.flush(this);
+    };
+    return QueueAction;
+}(AsyncAction_1.AsyncAction));
+exports.QueueAction = QueueAction;
+//# sourceMappingURL=QueueAction.js.map
+
+/***/ }),
+/* 275 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var root_1 = __webpack_require__(26);
+var Action_1 = __webpack_require__(276);
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @ignore
+ * @extends {Ignored}
+ */
+var AsyncAction = (function (_super) {
+    __extends(AsyncAction, _super);
+    function AsyncAction(scheduler, work) {
+        _super.call(this, scheduler, work);
+        this.scheduler = scheduler;
+        this.work = work;
+        this.pending = false;
+    }
+    AsyncAction.prototype.schedule = function (state, delay) {
+        if (delay === void 0) { delay = 0; }
+        if (this.closed) {
+            return this;
+        }
+        // Always replace the current state with the new state.
+        this.state = state;
+        // Set the pending flag indicating that this action has been scheduled, or
+        // has recursively rescheduled itself.
+        this.pending = true;
+        var id = this.id;
+        var scheduler = this.scheduler;
+        //
+        // Important implementation note:
+        //
+        // Actions only execute once by default, unless rescheduled from within the
+        // scheduled callback. This allows us to implement single and repeat
+        // actions via the same code path, without adding API surface area, as well
+        // as mimic traditional recursion but across asynchronous boundaries.
+        //
+        // However, JS runtimes and timers distinguish between intervals achieved by
+        // serial `setTimeout` calls vs. a single `setInterval` call. An interval of
+        // serial `setTimeout` calls can be individually delayed, which delays
+        // scheduling the next `setTimeout`, and so on. `setInterval` attempts to
+        // guarantee the interval callback will be invoked more precisely to the
+        // interval period, regardless of load.
+        //
+        // Therefore, we use `setInterval` to schedule single and repeat actions.
+        // If the action reschedules itself with the same delay, the interval is not
+        // canceled. If the action doesn't reschedule, or reschedules with a
+        // different delay, the interval will be canceled after scheduled callback
+        // execution.
+        //
+        if (id != null) {
+            this.id = this.recycleAsyncId(scheduler, id, delay);
+        }
+        this.delay = delay;
+        // If this action has already an async Id, don't request a new one.
+        this.id = this.id || this.requestAsyncId(scheduler, this.id, delay);
+        return this;
+    };
+    AsyncAction.prototype.requestAsyncId = function (scheduler, id, delay) {
+        if (delay === void 0) { delay = 0; }
+        return root_1.root.setInterval(scheduler.flush.bind(scheduler, this), delay);
+    };
+    AsyncAction.prototype.recycleAsyncId = function (scheduler, id, delay) {
+        if (delay === void 0) { delay = 0; }
+        // If this action is rescheduled with the same delay time, don't clear the interval id.
+        if (delay !== null && this.delay === delay && this.pending === false) {
+            return id;
+        }
+        // Otherwise, if the action's delay time is different from the current delay,
+        // or the action has been rescheduled before it's executed, clear the interval id
+        return root_1.root.clearInterval(id) && undefined || undefined;
+    };
+    /**
+     * Immediately executes this action and the `work` it contains.
+     * @return {any}
+     */
+    AsyncAction.prototype.execute = function (state, delay) {
+        if (this.closed) {
+            return new Error('executing a cancelled action');
+        }
+        this.pending = false;
+        var error = this._execute(state, delay);
+        if (error) {
+            return error;
+        }
+        else if (this.pending === false && this.id != null) {
+            // Dequeue if the action didn't reschedule itself. Don't call
+            // unsubscribe(), because the action could reschedule later.
+            // For example:
+            // ```
+            // scheduler.schedule(function doWork(counter) {
+            //   /* ... I'm a busy worker bee ... */
+            //   var originalAction = this;
+            //   /* wait 100ms before rescheduling the action */
+            //   setTimeout(function () {
+            //     originalAction.schedule(counter + 1);
+            //   }, 100);
+            // }, 1000);
+            // ```
+            this.id = this.recycleAsyncId(this.scheduler, this.id, null);
+        }
+    };
+    AsyncAction.prototype._execute = function (state, delay) {
+        var errored = false;
+        var errorValue = undefined;
+        try {
+            this.work(state);
+        }
+        catch (e) {
+            errored = true;
+            errorValue = !!e && e || new Error(e);
+        }
+        if (errored) {
+            this.unsubscribe();
+            return errorValue;
+        }
+    };
+    AsyncAction.prototype._unsubscribe = function () {
+        var id = this.id;
+        var scheduler = this.scheduler;
+        var actions = scheduler.actions;
+        var index = actions.indexOf(this);
+        this.work = null;
+        this.delay = null;
+        this.state = null;
+        this.pending = false;
+        this.scheduler = null;
+        if (index !== -1) {
+            actions.splice(index, 1);
+        }
+        if (id != null) {
+            this.id = this.recycleAsyncId(scheduler, id, null);
+        }
+    };
+    return AsyncAction;
+}(Action_1.Action));
+exports.AsyncAction = AsyncAction;
+//# sourceMappingURL=AsyncAction.js.map
+
+/***/ }),
+/* 276 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Subscription_1 = __webpack_require__(30);
+/**
+ * A unit of work to be executed in a {@link Scheduler}. An action is typically
+ * created from within a Scheduler and an RxJS user does not need to concern
+ * themselves about creating and manipulating an Action.
+ *
+ * ```ts
+ * class Action<T> extends Subscription {
+ *   new (scheduler: Scheduler, work: (state?: T) => void);
+ *   schedule(state?: T, delay: number = 0): Subscription;
+ * }
+ * ```
+ *
+ * @class Action<T>
+ */
+var Action = (function (_super) {
+    __extends(Action, _super);
+    function Action(scheduler, work) {
+        _super.call(this);
+    }
+    /**
+     * Schedules this action on its parent Scheduler for execution. May be passed
+     * some context object, `state`. May happen at some point in the future,
+     * according to the `delay` parameter, if specified.
+     * @param {T} [state] Some contextual data that the `work` function uses when
+     * called by the Scheduler.
+     * @param {number} [delay] Time to wait before executing the work, where the
+     * time unit is implicit and defined by the Scheduler.
+     * @return {void}
+     */
+    Action.prototype.schedule = function (state, delay) {
+        if (delay === void 0) { delay = 0; }
+        return this;
+    };
+    return Action;
+}(Subscription_1.Subscription));
+exports.Action = Action;
+//# sourceMappingURL=Action.js.map
+
+/***/ }),
+/* 277 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var AsyncScheduler_1 = __webpack_require__(278);
+var QueueScheduler = (function (_super) {
+    __extends(QueueScheduler, _super);
+    function QueueScheduler() {
+        _super.apply(this, arguments);
+    }
+    return QueueScheduler;
+}(AsyncScheduler_1.AsyncScheduler));
+exports.QueueScheduler = QueueScheduler;
+//# sourceMappingURL=QueueScheduler.js.map
+
+/***/ }),
+/* 278 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Scheduler_1 = __webpack_require__(279);
+var AsyncScheduler = (function (_super) {
+    __extends(AsyncScheduler, _super);
+    function AsyncScheduler() {
+        _super.apply(this, arguments);
+        this.actions = [];
+        /**
+         * A flag to indicate whether the Scheduler is currently executing a batch of
+         * queued actions.
+         * @type {boolean}
+         */
+        this.active = false;
+        /**
+         * An internal ID used to track the latest asynchronous task such as those
+         * coming from `setTimeout`, `setInterval`, `requestAnimationFrame`, and
+         * others.
+         * @type {any}
+         */
+        this.scheduled = undefined;
+    }
+    AsyncScheduler.prototype.flush = function (action) {
+        var actions = this.actions;
+        if (this.active) {
+            actions.push(action);
+            return;
+        }
+        var error;
+        this.active = true;
+        do {
+            if (error = action.execute(action.state, action.delay)) {
+                break;
+            }
+        } while (action = actions.shift()); // exhaust the scheduler queue
+        this.active = false;
+        if (error) {
+            while (action = actions.shift()) {
+                action.unsubscribe();
+            }
+            throw error;
+        }
+    };
+    return AsyncScheduler;
+}(Scheduler_1.Scheduler));
+exports.AsyncScheduler = AsyncScheduler;
+//# sourceMappingURL=AsyncScheduler.js.map
+
+/***/ }),
+/* 279 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * An execution context and a data structure to order tasks and schedule their
+ * execution. Provides a notion of (potentially virtual) time, through the
+ * `now()` getter method.
+ *
+ * Each unit of work in a Scheduler is called an {@link Action}.
+ *
+ * ```ts
+ * class Scheduler {
+ *   now(): number;
+ *   schedule(work, delay?, state?): Subscription;
+ * }
+ * ```
+ *
+ * @class Scheduler
+ */
+var Scheduler = (function () {
+    function Scheduler(SchedulerAction, now) {
+        if (now === void 0) { now = Scheduler.now; }
+        this.SchedulerAction = SchedulerAction;
+        this.now = now;
+    }
+    /**
+     * Schedules a function, `work`, for execution. May happen at some point in
+     * the future, according to the `delay` parameter, if specified. May be passed
+     * some context object, `state`, which will be passed to the `work` function.
+     *
+     * The given arguments will be processed an stored as an Action object in a
+     * queue of actions.
+     *
+     * @param {function(state: ?T): ?Subscription} work A function representing a
+     * task, or some unit of work to be executed by the Scheduler.
+     * @param {number} [delay] Time to wait before executing the work, where the
+     * time unit is implicit and defined by the Scheduler itself.
+     * @param {T} [state] Some contextual data that the `work` function uses when
+     * called by the Scheduler.
+     * @return {Subscription} A subscription in order to be able to unsubscribe
+     * the scheduled work.
+     */
+    Scheduler.prototype.schedule = function (work, delay, state) {
+        if (delay === void 0) { delay = 0; }
+        return new this.SchedulerAction(this, work).schedule(state, delay);
+    };
+    Scheduler.now = Date.now ? Date.now : function () { return +new Date(); };
+    return Scheduler;
+}());
+exports.Scheduler = Scheduler;
+//# sourceMappingURL=Scheduler.js.map
 
 /***/ })
 /******/ ]);

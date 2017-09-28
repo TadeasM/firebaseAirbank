@@ -25198,3 +25198,21 @@ ion-navbar.toolbar {
     padding-top: calc(16px + 20px);
   }
 }
+
+page-smart-review .main-card {
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+}
+
+page-smart-review .main-card_content {
+  padding: 0px;
+}
+
+page-smart-review .main-card_content ion-icon {
+  font-size: 2em;
+}
+
+page-smart-review .main-card_content span {
+  font-size: 10px;
+}
